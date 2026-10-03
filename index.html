@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CyberSentinelPro — Auto-diagnostic Loi 25 (gratuit, 4 minutes)</title>
+<meta name="description" content="20 questions, score instantané. Évaluez la conformité Loi 25 de votre entreprise québécoise en 4 minutes. Rapport d'écarts gratuit par courriel.">
+<style>
+  :root{--bg:#0b0f14;--card:#131a23;--line:#223042;--txt:#e8eef5;--mut:#8aa0b4;--red:#e5484d;--yel:#f5a524;--grn:#2fbf71;--acc:#3b82f6}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--txt);font:16px/1.55 -apple-system,'Segoe UI',Roboto,sans-serif;padding:24px}
+  .wrap{max-width:760px;margin:0 auto}
+  h1{font-size:1.5rem;margin-bottom:4px}
+  .sub{color:var(--mut);margin-bottom:20px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-bottom:14px}
+  .dom{font-size:.8rem;letter-spacing:.08em;color:var(--acc);text-transform:uppercase;margin-bottom:10px}
+  .q{display:flex;gap:12px;align-items:flex-start;padding:9px 0;border-top:1px solid var(--line)}
+  .q:first-of-type{border-top:none}
+  .q label{flex:1;cursor:pointer}
+  .q input{margin-top:4px;transform:scale(1.3);cursor:pointer}
+  .prog{height:6px;background:var(--line);border-radius:3px;margin-bottom:16px;overflow:hidden}
+  .prog>div{height:100%;width:0;background:var(--acc);transition:width .3s}
+  button{background:var(--acc);color:#fff;border:none;border-radius:10px;padding:14px 26px;font-size:1.05rem;font-weight:700;cursor:pointer;width:100%}
+  button:hover{filter:brightness(1.1)}
+  button:disabled{opacity:.5;cursor:not-allowed}
+  .btn-wa{background:#25d366;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:10px;text-decoration:none}
+  #result,#lead{display:none}
+  .score{font-size:3rem;font-weight:800;text-align:center;margin:10px 0}
+  .verdict{text-align:center;font-size:1.15rem;font-weight:700;margin-bottom:16px}
+  .bar{height:14px;background:var(--line);border-radius:7px;overflow:hidden;margin-bottom:18px}
+  .bar>div{height:100%;width:0;transition:width .8s}
+  .gap{padding:8px 0;border-top:1px solid var(--line)}
+  .tag{display:inline-block;font-size:.75rem;font-weight:700;padding:2px 10px;border-radius:20px;margin-right:8px}
+  .t-red{background:rgba(229,72,77,.15);color:var(--red)}
+  .t-yel{background:rgba(245,165,36,.15);color:var(--yel)}
+  form label{display:block;font-size:.85rem;color:var(--mut);margin:12px 0 4px}
+  form input[type=text],form input[type=email],form input[type=tel]{
+    width:100%;background:#0d131b;border:1px solid var(--line);border-radius:8px;
+    padding:11px 12px;color:var(--txt);font-size:1rem}
+  form input:focus{outline:none;border-color:var(--acc)}
+  .consent{display:flex;gap:10px;align-items:flex-start;margin-top:14px;font-size:.82rem;color:var(--mut)}
+  .consent input{margin-top:3px;transform:scale(1.2);cursor:pointer}
+  .fine{font-size:.78rem;color:var(--mut);margin-top:12px;line-height:1.5}
+  .fine b{color:var(--txt)}
+  .ok{background:rgba(47,191,113,.12);border:1px solid rgba(47,191,113,.4)}
+  .err{color:var(--red);font-size:.85rem;margin-top:10px;display:none}
+  footer{margin-top:26px;padding-top:16px;border-top:1px solid var(--line);font-size:.85rem;color:var(--mut);line-height:1.7}
+  footer b{color:var(--txt)}
+  .badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .badge{font-size:.72rem;font-weight:700;border:1px solid var(--line);border-radius:20px;padding:3px 12px;color:var(--mut)}
+  details{margin-top:10px;font-size:.82rem;color:var(--mut)}
+  summary{cursor:pointer;color:var(--acc)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>CyberSentinelPro</h1>
+  <p class="sub">Auto-diagnostic Loi 25 — 20 questions, 4 minutes, score instantané.
+  Répondez honnêtement : le résultat reste entre vous et nous.</p>
+
+  <div class="prog"><div id="pfill"></div></div>
+  <div id="quiz"></div>
+  <button id="go" onclick="score()" disabled>Voir mon score de conformité →</button>
+
+  <div id="result">
+    <div class="card">
+      <div class="dom">Votre résultat</div>
+      <div class="score" id="num">–</div>
+      <div class="bar"><div id="fill"></div></div>
+      <div class="verdict" id="verdict"></div>
+      <div id="gaps"></div>
+    </div>
+
+    <div class="card" id="lead">
+      <div class="dom">Recevez votre rapport d'écarts complet</div>
+      <p style="font-size:.95rem;color:var(--mut)">
+        Votre score est affiché. Le <b style="color:var(--txt)">rapport d'écarts détaillé</b> — chaque écart
+        expliqué, l'exigence de la Loi 25 associée, et l'action corrective priorisée — vous est envoyé
+        <b style="color:var(--txt)">par courriel sous 24 h</b>, sans frais et sans engagement.</p>
+      <form id="lform">
+        <label for="f-nom">Nom et prénom *</label>
+        <input type="text" id="f-nom" required autocomplete="name">
+        <label for="f-cour">Courriel *</label>
+        <input type="email" id="f-cour" required autocomplete="email">
+        <label for="f-ent">Entreprise</label>
+        <input type="text" id="f-ent" autocomplete="organization">
+        <label for="f-tel">Téléphone (optionnel — pour vous joindre plus vite)</label>
+        <input type="tel" id="f-tel" autocomplete="tel">
+        <div class="consent">
+          <input type="checkbox" id="f-cons" required>
+          <label for="f-cons" style="margin:0;cursor:pointer">J'accepte de recevoir mon rapport d'écarts et des informations
+          de conformité par courriel. Je peux me retirer en tout temps, sans conséquence. *</label>
+        </div>
+        <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
+        <div class="err" id="ferr">L'envoi a échoué — réessayez, ou contactez-nous directement sur WhatsApp ci-dessous.</div>
+        <p style="margin-top:14px"><button type="submit" id="fbtn">Envoyer mon rapport →</button></p>
+        <p class="fine"><b>Pourquoi ces données?</b> Uniquement pour vous faire parvenir votre rapport et assurer le suivi.
+        Finalité distincte, consentement retirable en tout temps, conservation 12 mois max, aucune vente ni partage à des tiers —
+        conformément à la Loi 25. C'est aussi ça, la conformité.</p>
+      </form>
+    </div>
+
+    <div class="card ok" id="done" style="display:none">
+      <div class="dom">✓ Reçu</div>
+      <p style="font-weight:700;margin-bottom:8px">Votre rapport part sous 24 h au courriel indiqué.</p>
+      <p style="font-size:.92rem;color:var(--mut)">Une question maintenant? Écrivez-nous directement —
+      réponse en personne, pas d'agent conversationnel :</p>
+      <a class="btn-wa button" id="wa2" href="#" style="display:flex">💬 Discuter sur WhatsApp — réponse rapide</a>
+      <p class="fine">Tarif fondateur : audit complet <b>1 500 $</b> (2 places/mois, ensuite 2 500 $).
+      Mentionnez « SCAN ».</p>
+    </div>
+  </div>
+
+  <footer>
+    <b>CyberSentinelPro</b> — Laval, QC<br>
+    📧 <a href="mailto:costa@belleproslaval440.com" style="color:var(--acc)">costa@belleproslaval440.com</a>
+    · 💬 <a href="https://wa.me/15145737441" style="color:var(--acc)">(514) 573-7441</a>
+    <div class="badges"><span class="badge">CISSP</span><span class="badge">CIPP</span>
+    <span class="badge">30 ans opération QSR</span><span class="badge">SOC en opération 24/7</span></div>
+  </footer>
+</div>
+
+<script>
+const EMAIL="costa@belleproslaval440.com",WA="15145737441";
+const D=[
+{dom:"Gouvernance",qs:[
+ "Un responsable de la protection des renseignements personnels est désigné par écrit et son titre est public.",
+ "Une politique de confidentialité à jour est publiée et en langage clair.",
+ "Un registre des incidents de confidentialité existe et a déjà servi (même simulateur).",
+ "Vos employés ont reçu une formation sur la manipulation des renseignements personnels (12 derniers mois)."]},
+{dom:"Consentement & transparence",qs:[
+ "Chaque finalité de collecte a son consentement distinct (pas une case unique « tout accepter »).",
+ "Vous informez les personnes des finalités, moyens, droits et retrait de consentement au moment de collecter.",
+ "Les témoins (cookies/pixels) non essentiels sont désactivés par défaut jusqu'au consentement.",
+ "Les personnes peuvent exercer accès, rectification, effacement et portabilité sans friction excessive."]},
+{dom:"Données & systèmes",qs:[
+ "Vous savez où habitent vos données: chaque système (POS, fidélité, RH, cloud) est cartographié.",
+ "Une ÉVP a été réalisée avant chaque nouveau système traitant des renseignements personnels (POS, IA, prise de RDV).",
+ "Les données hébergées ou consultées hors Québec ont fait l'objet d'une analyse écrite de protection équivalente (art. 17).",
+ "Un horaire de conservation existe et des suppressions réelles sont exécutées (pas « on garde tout »)."]},
+{dom:"Fournisseurs & contrats",qs:[
+ "Chaque fournisseur qui touche des données personnelles a un contrat écrit avec les 4 clauses (confidentialité, finalité, incident, destruction).",
+ "Vos outils IA (POS intelligent, chatbots, marketing automatisé) ont des conditions vérifiées: vos données ne servent pas à entraîner leurs modèles.",
+ "La liste des sous-traitants de vos fournisseurs critiques est connue.",
+ "Une clause de notification d'incident avec délai existe dans vos contrats clés."]},
+{dom:"Sécurité technique",qs:[
+ "MFA est activé sur la caisse, la banque, le courriel et les outils d'administration.",
+ "Les sauvegardes sont testées par une restauration réelle (12 derniers mois).",
+ "Les accès sont révisés au départ d'un employé (comptes fermés le jour même).",
+ "Chiffrement activé au repos et en transit pour les données clients et employés."]}];
+let lastScore=0,lastGaps=[];
+const quiz=document.getElementById('quiz');
+D.forEach((d,i)=>{
+ let h=`<div class="card"><div class="dom">${i+1}. ${d.dom}</div>`;
+ d.qs.forEach((q,j)=>{h+=`<div class="q"><input type="checkbox" id="q${i}_${j}" onchange="prog()"><label for="q${i}_${j}">${q}</label></div>`});
+ h+='</div>';quiz.innerHTML+=h;
+});
+function prog(){
+ let n=document.querySelectorAll('#quiz input:checked').length,t=D.length*D[0].qs.length;
+ document.getElementById('pfill').style.width=(n/t*100)+'%';
+ document.getElementById('go').disabled=false;
+ document.getElementById('go').textContent=n===t?'Voir mon score de conformité →':`Voir mon score (${n}/${t} répondu) →`;
+}
+function waText(){
+ let top=lastGaps.slice(0,3).map(g=>`• ${g.txt}`).join('%0A');
+ return `https://wa.me/${WA}?text=Bonjour%2C%20je%20viens%20de%20faire%20le%20scan%20Loi%2025.%0AMon%20score%20%3A%20${lastScore}%2F100.%0AMes%20écarts%20principaux%20%3A%0A${top}%0AJe%20voudrais%20en%20parler.`;
+}
+function score(){
+ let yes=0,total=0,gaps=[];
+ D.forEach((d,i)=>d.qs.forEach((q,j)=>{
+   total++;
+   const ok=document.getElementById(`q${i}_${j}`).checked;
+   if(ok)yes++;else gaps.push({dom:d.dom,txt:q});
+ }));
+ lastScore=Math.round(yes/total*100);lastGaps=gaps;
+ document.getElementById('quiz').style.display='none';
+ document.getElementById('go').style.display='none';
+ document.querySelector('.prog').style.display='none';
+ const r=document.getElementById('result');r.style.display='block';
+ document.getElementById('lead').style.display='block';
+ document.getElementById('num').textContent=lastScore+'/100';
+ const f=document.getElementById('fill');
+ f.style.width=lastScore+'%';
+ const col=lastScore>=80?'var(--grn)':lastScore>=60?'var(--yel)':'var(--red)';
+ f.style.background=col;document.getElementById('num').style.color=col;
+ document.getElementById('verdict').textContent=
+  lastScore>=80?'Bonne base — quelques trous à fermer.':lastScore>=60?'Zone grise — exposition réelle, plan de 90 jours requis.':'Rouge — vous êtes le client type de la CAI. Agir maintenant.';
+ const g=document.getElementById('gaps');
+ g.innerHTML=(gaps.length?'<div class="dom">Vos écarts ('+gaps.length+')</div>':'<div class="dom">Aucun écran coché: score maximal.</div>')+
+  gaps.slice(0,10).map(x=>`<div class="gap"><span class="tag ${['MFA','Les sauvegardes','Les accès','Chiffrement'].some(p=>x.txt.startsWith(p))?'t-red':'t-yel'}">${x.dom}</span>${x.txt}</div>`).join('')+
+  (gaps.length>10?`<div class="gap">… et ${gaps.length-10} autre(s). Le rapport d'audit les liste tous avec coût/effort.</div>`:'');
+ r.scrollIntoView({behavior:'smooth'});
+}
+document.getElementById('lform').addEventListener('submit',async e=>{
+ e.preventDefault();
+ const btn=document.getElementById('fbtn');btn.disabled=true;btn.textContent='Envoi…';
+ const body={
+   _subject:"Nouveau lead Loi 25 — score "+lastScore+"/100 — CyberSentinelPro",
+   _template:"table",
+   nom:document.getElementById('f-nom').value,
+   courriel:document.getElementById('f-cour').value,
+   entreprise:document.getElementById('f-ent').value||"—",
+   telephone:document.getElementById('f-tel').value||"—",
+   score:lastScore+"/100",
+   verdict:document.getElementById('verdict').textContent,
+   ecarts:lastGaps.length?lastGaps.map(g=>`[${g.dom}] ${g.txt}`).join(" | "):"aucun",
+   source:"self-scan github pages"
+ };
+ try{
+   const res=await fetch('https://formsubmit.co/ajax/'+EMAIL,{
+     method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},
+     body:JSON.stringify(body)});
+   const j=await res.json();
+   if(!(j.success==="true"||j.success===true))throw new Error(j.message||'reject');
+   document.getElementById('lead').style.display='none';
+   const d=document.getElementById('done');d.style.display='block';
+   document.getElementById('wa2').href=waText();
+   d.scrollIntoView({behavior:'smooth'});
+ }catch(err){
+   document.getElementById('ferr').style.display='block';
+   const d=document.getElementById('done');d.style.display='block';
+   d.querySelector('.dom').textContent='⚠ Envoi en ligne indisponible — passons par WhatsApp';
+   d.querySelector('p').style.display='none';
+   document.getElementById('wa2').href=waText();
+ }
+ btn.disabled=false;btn.textContent='Envoyer mon rapport →';
+});
+</script>
+</body>
+</html>
