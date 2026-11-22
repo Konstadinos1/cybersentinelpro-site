@@ -25,6 +25,7 @@ export const fr = {
     audioLabel: "Ambiance sonore",
     menu: "Menu",
     closeMenu: "Fermer le menu",
+    close: "Fermer",
     skip: "Aller au contenu",
     localeLabel: "Choisir la langue",
     home: "CyberSentinelPro, accueil",

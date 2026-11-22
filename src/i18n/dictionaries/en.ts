@@ -24,6 +24,7 @@ export const en: Dictionary = {
     audioLabel: "Ambient sound",
     menu: "Menu",
     closeMenu: "Close menu",
+    close: "Close",
     skip: "Skip to content",
     localeLabel: "Choose language",
     home: "CyberSentinelPro, home",
