@@ -1,12 +1,24 @@
+/**
+ * Each item carries its own leading separator. The list is shifted left by one separator
+ * width inside a clipping wrapper, so whichever item starts a line hides its separator and a
+ * wrapped line never begins with "|".
+ */
 export function TrustBar({ items, label }: { items: readonly string[]; label: string }) {
   return (
-    <ul aria-label={label} className="hud-text flex flex-wrap items-center gap-x-3 gap-y-2 text-mist">
-      {items.map((item, index) => (
-        <li key={item} className="flex items-center gap-3">
-          {index > 0 ? <span aria-hidden="true" className="text-line-strong">|</span> : null}
-          <span>{item}</span>
-        </li>
-      ))}
-    </ul>
+    <div className="overflow-hidden">
+      <ul
+        aria-label={label}
+        className="hud-text -ml-6 flex flex-wrap items-center gap-y-2 text-mist"
+      >
+        {items.map((item) => (
+          <li key={item} className="flex items-center">
+            <span aria-hidden="true" className="w-6 shrink-0 text-center text-line-strong">
+              |
+            </span>
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
