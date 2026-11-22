@@ -1,16 +1,22 @@
 import type { NextConfig } from "next";
 
 const isDev = process.env.NODE_ENV !== "production";
+/**
+ * Vercel injects its comments toolbar on preview deployments only. These hosts come from
+ * Vercel's toolbar CSP guidance and are never added to production builds.
+ */
+const isVercelPreview = process.env.VERCEL_ENV === "preview";
+const toolbar = (hosts: string) => (isVercelPreview ? ` ${hosts}` : "");
 
 /** Third parties allowed after consent: Plausible or Vercel analytics, Cal.com on click. */
 const contentSecurityPolicy = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline' https://plausible.io${isDev ? " 'unsafe-eval'" : ""}`,
-  "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob:",
-  "font-src 'self'",
-  "connect-src 'self' https://plausible.io",
-  "frame-src https://cal.com https://app.cal.com",
+  `script-src 'self' 'unsafe-inline' https://plausible.io${isDev ? " 'unsafe-eval'" : ""}${toolbar("https://vercel.live")}`,
+  `style-src 'self' 'unsafe-inline'${toolbar("https://vercel.live")}`,
+  `img-src 'self' data: blob:${toolbar("https://vercel.live https://vercel.com")}`,
+  `font-src 'self'${toolbar("https://vercel.live https://assets.vercel.com")}`,
+  `connect-src 'self' https://plausible.io${toolbar("https://vercel.live wss://ws-us3.pusher.com")}`,
+  `frame-src https://cal.com https://app.cal.com${toolbar("https://vercel.live")}`,
   "worker-src 'self' blob:",
   "object-src 'none'",
   "base-uri 'self'",
