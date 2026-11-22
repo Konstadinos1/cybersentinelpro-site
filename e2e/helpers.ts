@@ -1,3 +1,4 @@
+import { randomInt } from "node:crypto";
 import { mkdirSync, writeFileSync } from "node:fs";
 import type { Page, TestInfo } from "@playwright/test";
 import { en } from "../src/i18n/dictionaries/en";
@@ -58,4 +59,22 @@ export async function readSceneState(page: Page) {
 export function note(info: TestInfo, entry: Record<string, unknown>): void {
   const line = JSON.stringify({ project: info.project.name, test: info.title, ...entry });
   writeFileSync(`${SHOTS_DIR}/observations.jsonl`, `${line}\n`, { flag: "a" });
+}
+
+const OCTET_LIMIT = 256;
+
+/**
+ * Gives one test its own rate-limit bucket on a local server, where SPEC §10 allows five leads
+ * per minute per client and the suite posts more than that. Vercel overwrites x-forwarded-for,
+ * so the header cannot get around the limiter on a deployment.
+ */
+export function uniqueClientHeaders(): Record<string, string> {
+  const octets = [10, randomInt(OCTET_LIMIT), randomInt(OCTET_LIMIT), randomInt(1, OCTET_LIMIT - 1)];
+  return { "x-forwarded-for": octets.join(".") };
+}
+
+export async function isolateRateLimit(page: Page): Promise<Record<string, string>> {
+  const headers = uniqueClientHeaders();
+  await page.setExtraHTTPHeaders(headers);
+  return headers;
 }

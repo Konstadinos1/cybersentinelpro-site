@@ -2,8 +2,8 @@
  * Best-effort in-memory limiter (SPEC §10). Each serverless instance keeps its own window,
  * so this slows down scripted abuse but is not a hard global limit.
  */
-const WINDOW_MS = 60_000;
-const MAX_REQUESTS_PER_WINDOW = 5;
+export const WINDOW_MS = 60_000;
+export const MAX_REQUESTS_PER_WINDOW = 5;
 const MAX_TRACKED_CLIENTS = 5_000;
 
 const requestLog = new Map<string, number[]>();

@@ -1,8 +1,21 @@
 import { expect, test, type Page } from "@playwright/test";
 import { PRIVACY_PATHS } from "../src/i18n/config";
 import { E2E_ANSWERS, E2E_EXPECTED_SCORE } from "../src/lib/test-fixtures";
-import { PRESET_IDS } from "../src/components/sections/Sandbox/presets";
-import { DICTS, dismissConsent, note, readSceneState, scrollToSection, shotPath, watchErrors, type TestLocale } from "./helpers";
+import { PRESET_IDS, ROUTINE_PRESET_ID } from "../src/components/sections/Sandbox/presets";
+import { MAX_REQUESTS_PER_WINDOW } from "../src/lib/rate-limit";
+import { RULES_IN_ORDER } from "../src/lib/sandbox-engine";
+import {
+  DICTS,
+  dismissConsent,
+  isolateRateLimit,
+  note,
+  readSceneState,
+  scrollToSection,
+  shotPath,
+  uniqueClientHeaders,
+  watchErrors,
+  type TestLocale,
+} from "./helpers";
 
 const LOCALES: TestLocale[] = ["fr", "en"];
 const SECTIONS = [
@@ -98,6 +111,7 @@ for (const locale of LOCALES) {
     });
 
     test(`E4 calculator score, invalid email and API failure (${locale})`, async ({ page, request }, info) => {
+      const client = await isolateRateLimit(page);
       await page.goto(`/${locale}#diagnostic`);
       await dismissConsent(page, locale);
       await answerCalculator(page, locale);
@@ -126,7 +140,7 @@ for (const locale of LOCALES) {
       await expect(page.locator("[data-score-value]")).toHaveText(String(E2E_EXPECTED_SCORE), { timeout: 5000 });
       await page.locator("#diagnostic").screenshot({ path: shotPath(info, locale, "result") });
 
-      const direct = await request.post("/api/leads", { data: { source: "calculator", locale, full_name: "A B", work_email: "nope", company: "Co", consent_contact: true, ...E2E_ANSWERS } });
+      const direct = await request.post("/api/leads", { headers: client, data: { source: "calculator", locale, full_name: "A B", work_email: "nope", company: "Co", consent_contact: true, ...E2E_ANSWERS } });
       expect(direct.status()).toBe(400);
     });
 
@@ -135,16 +149,24 @@ for (const locale of LOCALES) {
       await page.goto(`/${locale}#sandbox`);
       await dismissConsent(page, locale);
       for (const preset of PRESET_IDS) {
+        const routine = preset === ROUTINE_PRESET_ID;
         await page.locator(`[data-preset="${preset}"]`).click();
-        await expect(page.locator('[data-pane="unprotected"] [data-verdict="breach"]')).toHaveText(copy.breach);
-        await expect(page.locator('[data-pane="guarded"] [data-verdict="blocked"]')).toHaveText(copy.blocked);
+        await expect(page.locator(`[data-pane="unprotected"] [data-verdict="${routine ? "no-breach" : "breach"}"]`)).toHaveText(
+          routine ? copy.noBreach : copy.breach,
+        );
+        await expect(page.locator(`[data-pane="guarded"] [data-verdict="${routine ? "allowed" : "blocked"}"]`)).toHaveText(
+          routine ? copy.allowed : copy.blocked,
+        );
         await page.locator('[data-pane="guarded"] summary').click();
         const log = JSON.parse((await page.locator("[data-audit-json]").textContent()) ?? "{}");
-        expect(log).toMatchObject({ preset, verdict: "BLOCKED", logged: true });
-        note(info, { preset, rule: log.rule_id, owasp: log.owasp_ref, latency_ms: log.latency_ms });
+        expect(log).toMatchObject(routine ? { preset, verdict: "ALLOWED", rule_id: null, logged: false } : { preset, verdict: "BLOCKED", logged: true });
+        expect(log.rules_evaluated).toEqual([...RULES_IN_ORDER]);
+        note(info, { preset, verdict: log.verdict, rule: log.rule_id, owasp: log.owasp_ref, latency_ms: log.latency_ms });
+        if (preset === "mcp_tool_hijack" || routine) {
+          await page.locator("#sandbox").screenshot({ path: shotPath(info, locale, routine ? "sandbox-routine" : "sandbox-tool-hijack") });
+        }
         await page.locator('[data-pane="guarded"] summary').click();
       }
-      await page.locator("#sandbox").screenshot({ path: shotPath(info, locale, "sandbox-tool-hijack") });
     });
 
     test(`screenshots of every section (${locale})`, async ({ page }, info) => {
@@ -163,6 +185,7 @@ for (const locale of LOCALES) {
 
     test(`partner drawer validation and success (${locale})`, async ({ page }, info) => {
       const copy = DICTS[locale];
+      await isolateRateLimit(page);
       await page.goto(`/${locale}#partners`);
       await dismissConsent(page, locale);
       await page.locator("[data-partner-open]").click();
@@ -192,4 +215,18 @@ test("mobile menu opens and closes", async ({ page }, info) => {
   await expect(page.locator("header nav").last()).toBeVisible();
   await page.screenshot({ path: shotPath(info, "fr", "edge-menu-open") });
   await page.getByRole("button", { name: DICTS.fr.hud.closeMenu }).click();
+});
+
+test("SPEC §10 the sixth lead in one minute from one client gets 429", async ({ request }, info) => {
+  test.skip(info.project.name !== "desktop", "one run is enough");
+  test.skip(Boolean(process.env.E2E_BASE_URL), "local only: on a deployment it would rate-limit the tester's own address");
+  const client = uniqueClientHeaders();
+  // Invalid on purpose: the limiter runs before validation, and nothing can be stored.
+  const invalid = { source: "partner", locale: "fr", full_name: "A", work_email: "nope", company: "C", consent_contact: false };
+  const statuses: number[] = [];
+  for (let attempt = 0; attempt <= MAX_REQUESTS_PER_WINDOW; attempt += 1) {
+    statuses.push((await request.post("/api/leads", { headers: client, data: invalid })).status());
+  }
+  expect(statuses).toEqual([...Array<number>(MAX_REQUESTS_PER_WINDOW).fill(400), 429]);
+  note(info, { statuses });
 });
