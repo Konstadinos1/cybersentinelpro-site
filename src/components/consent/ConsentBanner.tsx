@@ -30,7 +30,7 @@ export function ConsentBanner({ copy, privacyHref }: ConsentBannerProps) {
       aria-modal="false"
       aria-labelledby={titleId}
       data-consent-banner
-      className="panel fixed inset-x-3 bottom-3 z-50 max-w-xl rounded-lg p-5 shadow-2xl shadow-black/40 sm:inset-x-auto sm:bottom-6 sm:left-6"
+      className="panel fixed inset-x-3 bottom-3 z-50 max-w-xl rounded-lg bg-abyss p-5 shadow-2xl shadow-black/40 sm:inset-x-auto sm:bottom-6 sm:left-6 lg:left-auto lg:right-6"
     >
       <h2 id={titleId} className="text-lg font-semibold">
         {settingsOpen ? copy.settingsTitle : copy.title}
