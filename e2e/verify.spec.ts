@@ -148,7 +148,9 @@ for (const locale of LOCALES) {
     });
 
     test(`screenshots of every section (${locale})`, async ({ page }, info) => {
-      await page.goto(`/${locale}`, { waitUntil: "networkidle" });
+      // Software WebGL drops to the static tier within seconds; pin it so the scenes are captured.
+      const pin = info.project.name === "desktop" ? "high" : "mid";
+      await page.goto(`/${locale}?quality=${pin}`, { waitUntil: "networkidle" });
       await page.waitForTimeout(3000);
       await page.screenshot({ path: shotPath(info, locale, "edge-consent-banner") });
       await dismissConsent(page, locale);

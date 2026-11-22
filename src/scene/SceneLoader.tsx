@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useState } from "react";
-import { detectInitialTier, lowerTier, type QualityTier } from "./quality/capability";
+import { detectInitialTier, lowerTier, readPinnedTier, type QualityTier } from "./quality/capability";
 
 /** The only path into the 3D chunk: never server-rendered, never in the initial bundle. */
 const SceneCanvas = dynamic(() => import("./SceneCanvas"), { ssr: false });
@@ -20,10 +20,13 @@ function whenIdle(callback: () => void): () => void {
 
 export function SceneLoader() {
   const [tier, setTier] = useState<QualityTier | null>(null);
+  const [pinned, setPinned] = useState(false);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    const initial = detectInitialTier();
+    const pin = readPinnedTier();
+    setPinned(pin !== null);
+    const initial = pin ?? detectInitialTier();
     document.documentElement.dataset.quality = initial;
     setTier(initial);
     if (initial === "static") return;
@@ -40,5 +43,5 @@ export function SceneLoader() {
   }, []);
 
   if (!ready || tier === null || tier === "static") return null;
-  return <SceneCanvas tier={tier} onDegrade={degrade} />;
+  return <SceneCanvas tier={tier} onDegrade={pinned ? undefined : degrade} />;
 }

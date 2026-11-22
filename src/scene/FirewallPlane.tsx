@@ -116,7 +116,7 @@ export function FirewallPlane() {
   });
 
   return (
-    <group ref={group} position={narrow ? [0.6, 1.5, -1.5] : [2.6, 0.1, 0]} rotation={[0, -0.55, 0]}>
+    <group ref={group} position={narrow ? [0.9, 1.75, -2] : [2.3, 1.1, -0.6]} rotation={[0, -1.0, 0]} scale={narrow ? 0.5 : 0.52}>
       <mesh geometry={planeGeometry} material={planeMaterial} rotation={[0, Math.PI / 2, 0]} />
       <instancedMesh ref={nodesRef} args={[nodeGeometry, nodeMaterial, NODE_COUNT]} frustumCulled={false} />
       <mesh ref={packetRef} geometry={packetGeometry} material={packetMaterial} visible={false} />

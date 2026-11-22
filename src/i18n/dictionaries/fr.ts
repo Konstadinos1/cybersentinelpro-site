@@ -213,7 +213,7 @@ export const fr = {
     allowed: "AUTORISÉ",
     rule: "Règle",
     owasp: "Référence OWASP",
-    latency: "Latence",
+    latency: "Latence moyenne (200 exécutions)",
     auditJson: "Journal d'audit (JSON)",
     note: "Les secrets, noms et numéros affichés sont fictifs. Aucune donnée ne quitte votre navigateur.",
   },

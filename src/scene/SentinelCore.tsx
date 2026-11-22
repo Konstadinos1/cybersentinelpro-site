@@ -10,13 +10,13 @@ import { approach, clampUnit, NARROW_VIEWPORT_PX, SCENE_COLORS, VISIBLE_EPSILON 
 import { PARTICLE_COUNTS, type QualityTier } from "./quality/capability";
 import { sceneState } from "./scene-bus";
 
-const CORE_RADIUS = 1.0;
-const EDGE_RADIUS = 1.06;
-const SHELL_SCALE = 1.42;
+const CORE_RADIUS = 0.92;
+const EDGE_RADIUS = 0.97;
+const SHELL_SCALE = 1.22;
 const SPIN_RATE = 0.12;
 const VELOCITY_SCALE = 40;
 const EDGE_OPACITY = 0.4;
-const WIDE_POSITION: readonly [number, number, number] = [2.55, 0.1, 0];
+const WIDE_POSITION: readonly [number, number, number] = [1.85, 0.05, 0];
 const NARROW_POSITION: readonly [number, number, number] = [0.2, 1.55, -1.6];
 
 export function SentinelCore({ tier, onFirstFrame }: { tier: QualityTier; onFirstFrame: () => void }) {
@@ -82,7 +82,8 @@ export function SentinelCore({ tier, onFirstFrame }: { tier: QualityTier; onFirs
       {tier === "high" ? (
         <mesh scale={SHELL_SCALE}>
           <icosahedronGeometry args={[1, 0]} />
-          <MeshTransmissionMaterial samples={6} resolution={384} thickness={0.35} roughness={0} chromaticAberration={0.03} anisotropy={0} distortion={0} ior={1.3} transmission={1} flatShading color={SCENE_COLORS.frost} backside={false} />
+          {/* No per-pixel jitter (chromaticAberration/anisotropy 0): the post pass adds colour split cleanly. */}
+          <MeshTransmissionMaterial samples={6} resolution={768} thickness={0.25} roughness={0} chromaticAberration={0} anisotropicBlur={0} distortion={0} ior={1.25} transmission={1} flatShading color={SCENE_COLORS.frost} backside={false} />
         </mesh>
       ) : null}
       <ParticleLattice count={PARTICLE_COUNTS[tier]} fade={fade} />

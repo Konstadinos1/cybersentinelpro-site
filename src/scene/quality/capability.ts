@@ -22,6 +22,16 @@ function supportsWebGL2(): boolean {
   }
 }
 
+/**
+ * QA override: `?quality=high|mid` pins the tier and disables automatic drops, so the
+ * scenes can be reviewed on machines without a GPU. It never forces a canvas without WebGL2.
+ */
+export function readPinnedTier(): QualityTier | null {
+  if (typeof window === "undefined") return null;
+  const value = new URLSearchParams(window.location.search).get("quality");
+  return (value === "high" || value === "mid") && supportsWebGL2() ? value : null;
+}
+
 export function detectInitialTier(): QualityTier {
   if (typeof window === "undefined") return "static";
   const hints = navigator as Navigator & NavigatorHints;

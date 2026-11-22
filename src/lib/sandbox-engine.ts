@@ -36,7 +36,9 @@ export const TOOL_ALLOWLIST: ReadonlySet<string> = new Set(["search_documents", 
 /** The only domain the demo agent may send data to. */
 export const TRUSTED_DOMAIN = "groupe-exemple.ca";
 const MATCH_PREVIEW_LENGTH = 80;
-const LATENCY_DECIMALS = 3;
+const LATENCY_DECIMALS = 4;
+/** Browsers coarsen performance.now() to ~0.1 ms, so one call reads as 0; we time a batch. */
+export const LATENCY_SAMPLE_RUNS = 200;
 
 const INSTRUCTION_OVERRIDE_PATTERNS: readonly RegExp[] = [
   /\b(ignore[rsz]?|disregard|oublie[rsz]?)\b.{0,40}\b(instructions?|consignes?|r[eè]gles|rules)\b/i,
@@ -137,14 +139,20 @@ export function evaluateAgentRequest(request: AgentRequest): GuardDecision {
   return decision ?? { verdict: "ALLOWED", rule_id: null, owasp_ref: null, reason: null, matched: null };
 }
 
-/** Wraps the decision with the measured latency and the audit-log flag shown in the sandbox. */
-export function runGuardedRequest(request: AgentRequest, now: () => number = () => performance.now()): GuardResult {
+/** Wraps the decision with the average latency per call and the audit-log flag. */
+export function runGuardedRequest(
+  request: AgentRequest,
+  options: { now?: () => number; runs?: number } = {},
+): GuardResult {
+  const now = options.now ?? (() => performance.now());
+  const runs = Math.max(1, options.runs ?? LATENCY_SAMPLE_RUNS);
   const startedAt = now();
-  const decision = evaluateAgentRequest(request);
-  const latency = now() - startedAt;
+  let decision = evaluateAgentRequest(request);
+  for (let run = 1; run < runs; run += 1) decision = evaluateAgentRequest(request);
+  const average = (now() - startedAt) / runs;
   return {
     ...decision,
-    latency_ms: Number(latency.toFixed(LATENCY_DECIMALS)),
+    latency_ms: Number(average.toFixed(LATENCY_DECIMALS)),
     logged: decision.verdict === "BLOCKED",
   };
 }

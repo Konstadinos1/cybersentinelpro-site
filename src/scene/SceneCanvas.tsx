@@ -71,7 +71,8 @@ function TierTag({ tier }: { tier: QualityTier }) {
   return null;
 }
 
-export default function SceneCanvas({ tier, onDegrade }: { tier: QualityTier; onDegrade: () => void }) {
+/** `onDegrade` is omitted when QA pins the tier; then no performance monitor runs. */
+export default function SceneCanvas({ tier, onDegrade }: { tier: QualityTier; onDegrade?: () => void }) {
   const frameloop = useFrameloop();
   usePointerAndScroll();
   const markReady = useCallback(() => {
@@ -91,7 +92,9 @@ export default function SceneCanvas({ tier, onDegrade }: { tier: QualityTier; on
           gl.setClearColor(SCENE_COLORS.night, 1);
         }}
       >
-        <PerformanceMonitor ms={MONITOR_SAMPLE_MS} iterations={MONITOR_SAMPLES} threshold={0.75} bounds={() => [MIN_FPS, TARGET_FPS]} onDecline={onDegrade} />
+        {onDegrade ? (
+          <PerformanceMonitor ms={MONITOR_SAMPLE_MS} iterations={MONITOR_SAMPLES} threshold={0.75} bounds={() => [MIN_FPS, TARGET_FPS]} onDecline={onDegrade} />
+        ) : null}
         <TierTag tier={tier} />
         <CameraRig />
         <SentinelCore tier={tier} onFirstFrame={markReady} />

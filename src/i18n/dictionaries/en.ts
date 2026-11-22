@@ -207,7 +207,7 @@ export const en: Dictionary = {
     allowed: "ALLOWED",
     rule: "Rule",
     owasp: "OWASP reference",
-    latency: "Latency",
+    latency: "Average latency (200 runs)",
     auditJson: "Audit log (JSON)",
     note: "The secrets, names and numbers shown are fictional. No data leaves your browser.",
   },

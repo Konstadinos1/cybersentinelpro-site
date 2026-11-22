@@ -18,7 +18,7 @@ import { sceneState } from "./scene-bus";
 
 const MAX_PARTICLES = 6000;
 const INNER_RADIUS = 1.7;
-const OUTER_RADIUS = 3.3;
+const OUTER_RADIUS = 3.0;
 const PARTICLE_SIZE = 0.013;
 const MAX_OPACITY = 0.7;
 const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));

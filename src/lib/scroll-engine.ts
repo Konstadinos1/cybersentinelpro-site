@@ -25,9 +25,11 @@ export async function startScrollEngine(): Promise<() => void> {
   gsap.ticker.add(tick);
   gsap.ticker.lagSmoothing(0);
 
-  const triggers = [...createSectionTriggers(ScrollTrigger), createMonolithScrub(ScrollTrigger)].filter(
+  const sectionTriggers = createSectionTriggers(ScrollTrigger);
+  const triggers = [...sectionTriggers, createMonolithScrub(ScrollTrigger)].filter(
     (trigger): trigger is NonNullable<typeof trigger> => trigger !== null,
   );
+  syncSceneWithScroll(ScrollTrigger, sectionTriggers);
   return () => {
     triggers.forEach((trigger) => trigger.kill());
     gsap.ticker.remove(tick);
@@ -53,15 +55,37 @@ function createSectionTriggers(ScrollTrigger: ScrollTriggerStatic) {
   });
 }
 
+/**
+ * onToggle fires only on changes, so a visitor who lands mid-page (a #partners link) would
+ * keep the hero scene rendering behind opaque sections. Resolve the starting scene once.
+ */
+function syncSceneWithScroll(ScrollTrigger: ScrollTriggerStatic, triggers: ReturnType<ScrollTriggerStatic["create"]>[]) {
+  ScrollTrigger.refresh();
+  const active = triggers.find((trigger) => trigger.isActive);
+  const scene = (active?.trigger as HTMLElement | undefined)?.dataset.sceneSection as SceneId | undefined;
+  setActiveScene(scene ?? "none");
+}
+
+function centredScrollTop(element: HTMLElement): number {
+  const rect = element.getBoundingClientRect();
+  return rect.top + window.scrollY + rect.height / 2 - window.innerHeight / 2;
+}
+
 /** Keeps the three tier panels and the camera scrub in step. */
 function createMonolithScrub(ScrollTrigger: ScrollTriggerStatic) {
   const list = document.querySelector<HTMLElement>("#solutions ol");
   if (!list) return null;
   const panels = Array.from(list.querySelectorAll<HTMLElement>("[data-tier-panel] article"));
+  const first = panels[0];
+  const last = panels[panels.length - 1];
+  if (!first || !last) return null;
+  // Progress 0 and 1 land exactly when the first and last cards sit at the viewport centre,
+  // so the camera faces the monolith of the card being read.
   return ScrollTrigger.create({
     trigger: list,
-    start: "top center",
-    end: "bottom center",
+    start: () => centredScrollTop(first),
+    end: () => centredScrollTop(last),
+    invalidateOnRefresh: true,
     scrub: true,
     onUpdate: (self) => {
       sceneState.monolithProgress = self.progress;

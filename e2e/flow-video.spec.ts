@@ -27,7 +27,7 @@ test("main flow video (desktop, FR)", async ({ browser }, info) => {
   const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, recordVideo: { dir: "test-results/video", size: { width: 1440, height: 900 } } });
   const page = await context.newPage();
   const copy = DICTS.fr;
-  await page.goto("/fr", { waitUntil: "networkidle" });
+  await page.goto("/fr?quality=mid", { waitUntil: "networkidle" });
   await page.waitForTimeout(3500);
   await page.locator('[data-consent="refuse"]').click();
   await page.waitForTimeout(PAUSE);

@@ -123,7 +123,7 @@ function GuardedPane({ run, copy }: { run: Run; copy: Dictionary["sandbox"] }) {
   const rows: ReadonlyArray<readonly [string, string]> = [
     [copy.rule, result.rule_id ?? "—"],
     [copy.owasp, result.owasp_ref ?? "—"],
-    [copy.latency, `${result.latency_ms.toFixed(3)} ms`],
+    [copy.latency, `${result.latency_ms.toFixed(4)} ms`],
   ];
   return (
     <article data-pane="guarded" className="panel flex flex-col rounded-lg p-5">

@@ -2,6 +2,7 @@
 
 import { AnimatePresence, LazyMotion, m } from "framer-motion";
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
+import { createPortal } from "react-dom";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries/fr";
 import { PARTNER_TYPES, type PartnerType } from "@/lib/partner-types";
@@ -57,11 +58,15 @@ export function PartnerTrack(props: PartnerTrackProps) {
           ))}
         </dl>
       </div>
-      {motionArmed ? (
-        <LazyMotion features={loadMotionFeatures} strict>
-          <AnimatePresence>{open ? <PartnerDrawer {...props} onClose={close} /> : null}</AnimatePresence>
-        </LazyMotion>
-      ) : null}
+      {/* Portalled to <body>: inside the section's stacking context the footer painted over it. */}
+      {motionArmed
+        ? createPortal(
+            <LazyMotion features={loadMotionFeatures} strict>
+              <AnimatePresence>{open ? <PartnerDrawer {...props} onClose={close} /> : null}</AnimatePresence>
+            </LazyMotion>,
+            document.body,
+          )
+        : null}
     </section>
   );
 }

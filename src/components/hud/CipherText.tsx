@@ -4,7 +4,8 @@ import { useEffect, useRef } from "react";
 
 const GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/.:#";
 const FRAME_MS = 32;
-const FRAMES_PER_CHAR = 2;
+/** Total reveal time; based on the clock, so a busy main thread cannot stretch it. */
+const REVEAL_MS = 1200;
 
 /**
  * Text-scramble reveal. It animates only `textContent` inside a fixed-width monospace box
@@ -16,21 +17,20 @@ export function CipherText({ text, className = "" }: { text: string; className?:
   useEffect(() => {
     const node = ref.current;
     if (!node || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const startedAt = performance.now();
     let frame = 0;
-    const total = text.length * FRAMES_PER_CHAR;
     const timer = window.setInterval(() => {
-      const revealed = Math.floor(frame / FRAMES_PER_CHAR);
+      const progress = (performance.now() - startedAt) / REVEAL_MS;
+      if (progress >= 1) {
+        node.textContent = text;
+        return window.clearInterval(timer);
+      }
+      const revealed = Math.floor(progress * text.length);
+      frame += 1;
       node.textContent = text
         .split("")
-        .map((char, index) =>
-          index < revealed || char === " " ? char : GLYPHS[(index * 7 + frame) % GLYPHS.length],
-        )
+        .map((char, index) => (index < revealed || char === " " ? char : GLYPHS[(index * 7 + frame) % GLYPHS.length]))
         .join("");
-      frame += 1;
-      if (frame > total) {
-        node.textContent = text;
-        window.clearInterval(timer);
-      }
     }, FRAME_MS);
     return () => window.clearInterval(timer);
   }, [text]);

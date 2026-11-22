@@ -56,8 +56,10 @@ describe("detectors", () => {
 
   it("reports latency from the injected clock and logs blocks", () => {
     let tick = 0;
-    const result = runGuardedRequest(buildPreset("prompt_extraction", "en").request, () => (tick += 0.25));
+    const result = runGuardedRequest(buildPreset("prompt_extraction", "en").request, { now: () => (tick += 0.25), runs: 1 });
     expect(result.latency_ms).toBe(0.25);
+    const batch = runGuardedRequest(buildPreset("prompt_extraction", "en").request, { now: () => (tick += 1), runs: 200 });
+    expect(batch.latency_ms).toBe(0.005);
     expect(result.logged).toBe(true);
   });
 });

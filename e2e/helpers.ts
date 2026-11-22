@@ -27,7 +27,9 @@ export function watchErrors(page: Page): string[] {
 /** Accepting nothing: dismisses the banner with "Refuse" so it does not cover section shots. */
 export async function dismissConsent(page: Page, locale: TestLocale): Promise<void> {
   const refuse = page.getByRole("button", { name: DICTS[locale].consent.refuse, exact: true });
-  if (await refuse.isVisible().catch(() => false)) await refuse.click();
+  // The banner mounts after hydration; wait for it instead of racing it.
+  const shown = await refuse.waitFor({ state: "visible", timeout: 6000 }).then(() => true, () => false);
+  if (shown) await refuse.click();
 }
 
 export async function scrollToSection(page: Page, selector: string): Promise<void> {

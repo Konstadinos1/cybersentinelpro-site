@@ -9,7 +9,7 @@ import { sceneState } from "./scene-bus";
 
 export const MONOLITH_SPACING = 3.4;
 const MONOLITH_COUNT = 3;
-const CHAMBER_SIZE = new Vector3(1.05, 3.1, 1.05);
+const CHAMBER_SIZE = new Vector3(0.9, 2.4, 0.9);
 const WIDE_OFFSET_X = 2.3;
 const NARROW_OFFSET: readonly [number, number] = [0, 1.6];
 
@@ -33,6 +33,7 @@ function useChamberMaterials() {
 /** Three translucent chambers, one per offer tier; the camera rig scrubs between them. */
 export function ServiceMonoliths() {
   const group = useRef<Group>(null);
+  const chambers = useRef<(Group | null)[]>([]);
   const fade = useRef(0);
   const narrow = useThree((state) => state.size.width < NARROW_VIEWPORT_PX);
   const geometry = useMemo(() => new BoxGeometry(CHAMBER_SIZE.x, CHAMBER_SIZE.y, CHAMBER_SIZE.z), []);
@@ -62,14 +63,17 @@ export function ServiceMonoliths() {
       body.uniforms.uOpacity!.value = fade.current;
       edges.opacity = fade.current * (0.25 + 0.6 * focus);
     });
-    node.rotation.y = approach(node.rotation.y, -0.35 + sceneState.pointerX * 0.08, delta);
+    // Each chamber turns in place; rotating the row would push later chambers off the camera path.
+    for (const chamber of chambers.current) {
+      if (chamber) chamber.rotation.y = approach(chamber.rotation.y, -0.35 + sceneState.pointerX * 0.08, delta);
+    }
   });
 
   const [offsetX, offsetY] = narrow ? NARROW_OFFSET : [WIDE_OFFSET_X, 0];
   return (
     <group ref={group} position={[offsetX, offsetY, 0]}>
       {materials.map(({ body, edges }, index) => (
-        <group key={index} position={[index * MONOLITH_SPACING, 0, 0]}>
+        <group key={index} ref={(node) => void (chambers.current[index] = node)} position={[index * MONOLITH_SPACING, 0, 0]}>
           <mesh geometry={geometry} material={body} />
           <lineSegments geometry={edgeGeometry} material={edges} />
         </group>
