@@ -18,6 +18,9 @@ export interface AgentRequest {
 
 export type RuleId = "CSP-PI-001" | "CSP-PII-002" | "CSP-TOOL-003";
 
+/** Evaluation order: tool misuse first because it is the action with real-world side effects. */
+export const RULES_IN_ORDER: readonly RuleId[] = ["CSP-TOOL-003", "CSP-PII-002", "CSP-PI-001"];
+
 export interface GuardDecision {
   verdict: "ALLOWED" | "BLOCKED";
   rule_id: RuleId | null;
@@ -132,7 +135,7 @@ function checkInstructionOverride(request: AgentRequest): GuardDecision | null {
   return null;
 }
 
-/** Tool misuse is checked first because it is the action with real-world side effects. */
+/** Runs the rules in `RULES_IN_ORDER`; the first one that fires decides. */
 export function evaluateAgentRequest(request: AgentRequest): GuardDecision {
   const decision =
     checkToolCalls(request) ?? checkPersonalInformation(request) ?? checkInstructionOverride(request);

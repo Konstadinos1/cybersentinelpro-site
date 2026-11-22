@@ -4,7 +4,10 @@ Bilingual (French default, English) marketing site and lead engine for CyberSent
 Law 25 and AI security audits for Quebec companies with 25 to 250 employees.
 
 The contract is [`SPEC.md`](SPEC.md); project rules are in [`CLAUDE.md`](CLAUDE.md) and `.claude/rules/`.
-Offer, prices and positioning follow the *CyberSentinelPro 18-Month Business Strategy Plan* (22 Nov 2026).
+Offer, prices and positioning follow the owner's 18-month strategy plan (22 Nov 2026). From the earlier
+business plan (11 Nov 2026), only the points that do not conflict with it are used: the written go/no-go
+recommendation per AI system, the 50% deposit terms, the routine-request demo in the sandbox, and
+CASL-style newsletter consent wording.
 All prices live in `src/i18n/dictionaries/{fr,en}.ts` (`offers.tiers`) and `src/components/JsonLd.tsx`.
 
 ## What is on the page

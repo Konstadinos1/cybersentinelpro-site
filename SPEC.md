@@ -116,6 +116,7 @@ The server recomputes the score; a client-sent score is ignored.
 - "Unprotected model" output is a scripted fixture per preset (clearly labelled *simulation*).
 - "Guardrailed runtime" output comes from `lib/sandbox-engine.ts`, a real TS rule engine run in the browser (pattern rules + tool-call allowlist + PII detectors). Latency shown is `performance.now()` around that call.
 - Presets: `prompt_extraction`, `law25_pii_exfil`, `mcp_tool_hijack`. Each yields `{verdict:'BREACH'}` on the left and `{verdict:'BLOCKED', rule_id, owasp_ref, latency_ms, logged:true}` on the right, with expandable audit JSON.
+- A fourth preset, `routine_ticket`, sends an ordinary employee request through the same guard: `NO BREACH` on the left, `{verdict:'ALLOWED', rule_id:null, logged:false}` on the right. It shows that legitimate work passes (Business Plan, 11 Nov 2026). The firewall scene replays only for attacks.
 - Secret-shaped strings in fixtures are assembled from fragments at runtime. Attacker text is rendered as text only (no `dangerouslySetInnerHTML`).
 
 ## 9. Data: Supabase `leads`
@@ -200,7 +201,7 @@ Receivers reject timestamps older than 5 minutes. Resend is a stub (`lib/email.t
 | E2 | WebGL | `canvas[data-scene="sentinel"]` mounts with a WebGL context; with `reducedMotion:'reduce'` no canvas exists and `[data-hero-static]` is visible |
 | E3 | Locale switch | FR->EN->FR changes nav labels, hero H1, calculator step 1 label, and maps `/fr/confidentialite` <-> `/en/privacy` |
 | E4 | Calculator | A fixed answer set yields the expected score (unit-tested value), score is 0–100, POST `/api/leads` returns 201; an invalid email returns 400 and shows the inline error |
-| E5 | Sandbox | Each of the 3 presets shows `BREACH DETECTED` left and `BLOCKED + LOGGED` right, with audit JSON that parses |
+| E5 | Sandbox | Each of the 3 attack presets shows `BREACH DETECTED` left and `BLOCKED + LOGGED` right; the routine preset shows `NO BREACH` and `ALLOWED`; every audit JSON parses and lists the 3 rules evaluated |
 | E6 | Consent | Before opt-in: no request to the analytics host and `trackEvent` calls are dropped. After Refuser: still none. After Accepter: the analytics script loads |
 | E7 | Dead CTAs | Every `a[href]` and `button` on the home page resolves to an existing id, a drawer, or a URL returning < 400 |
 

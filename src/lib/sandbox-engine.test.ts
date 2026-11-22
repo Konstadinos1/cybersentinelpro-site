@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { buildPreset, PRESET_IDS } from "@/components/sections/Sandbox/presets";
-import { evaluateAgentRequest, passesLuhn, runGuardedRequest } from "./sandbox-engine";
+import { ATTACK_PRESET_IDS, buildPreset, ROUTINE_PRESET_ID } from "@/components/sections/Sandbox/presets";
+import { evaluateAgentRequest, passesLuhn, RULES_IN_ORDER, runGuardedRequest } from "./sandbox-engine";
 
 const EXPECTED_RULES = {
   prompt_extraction: ["CSP-PI-001", "LLM07:2025 System Prompt Leakage"],
@@ -10,7 +10,7 @@ const EXPECTED_RULES = {
 
 describe("sandbox presets", () => {
   for (const locale of ["fr", "en"] as const) {
-    for (const preset of PRESET_IDS) {
+    for (const preset of ATTACK_PRESET_IDS) {
       it(`${preset} (${locale}) is blocked by the expected rule`, () => {
         const decision = evaluateAgentRequest(buildPreset(preset, locale).request);
         expect(decision.verdict).toBe("BLOCKED");
@@ -18,6 +18,19 @@ describe("sandbox presets", () => {
       });
     }
   }
+
+  for (const locale of ["fr", "en"] as const) {
+    it(`the routine request (${locale}) passes every rule and is not logged`, () => {
+      const fixture = buildPreset(ROUTINE_PRESET_ID, locale);
+      const result = runGuardedRequest(fixture.request, { runs: 1 });
+      expect(fixture.kind).toBe("routine");
+      expect(result).toMatchObject({ verdict: "ALLOWED", rule_id: null, logged: false });
+    });
+  }
+
+  it("evaluates each rule exactly once, in a fixed order", () => {
+    expect([...RULES_IN_ORDER].sort()).toEqual(["CSP-PI-001", "CSP-PII-002", "CSP-TOOL-003"]);
+  });
 
   it("does not ship a secret-shaped literal in the fixture source", async () => {
     const { readFile } = await import("node:fs/promises");

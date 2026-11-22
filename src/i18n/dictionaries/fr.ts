@@ -6,7 +6,7 @@ export const fr = {
   meta: {
     title: "CyberSentinelPro | Audit Loi 25 et sécurité de l'IA, Laval",
     description:
-      "Audit hybride Loi 25 et tests adverses de vos systèmes d'IA, à prix fixe, pour les entreprises québécoises de 25 à 250 employés. Score de risque gratuit.",
+      "Conformité Loi 25 et sécurité de l'IA\u00a0: audit hybride à prix fixe avec tests adverses de vos systèmes d'IA, pour les entreprises québécoises de 25 à 250 employés.",
     privacyTitle: "Politique de confidentialité | CyberSentinelPro",
     privacyDescription:
       "Quels renseignements personnels CyberSentinelPro recueille, pourquoi, où ils sont hébergés et comment exercer vos droits.",
@@ -165,7 +165,8 @@ export const fr = {
     workEmail: "Courriel professionnel",
     company: "Entreprise",
     consentContact: "J'accepte que CyberSentinelPro me contacte au sujet de ma demande.",
-    consentMarketing: "J'accepte aussi de recevoir l'infolettre mensuelle (facultatif).",
+    consentMarketing:
+      "J'accepte de recevoir l'infolettre mensuelle de CyberSentinelPro (facultatif). Je peux me désabonner en tout temps.",
     purpose:
       "Nous utilisons ces renseignements pour répondre à votre demande et en discuter avec vous. Ils sont conservés 24 mois.",
     privacyLink: "Politique de confidentialité",
@@ -184,8 +185,8 @@ export const fr = {
   sandbox: {
     title: "Bac à sable des menaces",
     intro:
-      "Trois attaques connues contre Clara, l'assistante IA fictive de Groupe Exemple inc. À gauche, la réponse scénarisée d'un modèle sans protection. À droite, notre moteur de règles, exécuté dans votre navigateur.",
-    presetsLabel: "Choisir une attaque",
+      "Trois attaques connues et une demande courante, soumises à Clara, l'assistante IA fictive de Groupe Exemple inc. À gauche, la réponse scénarisée d'un modèle sans protection. À droite, notre moteur de règles, exécuté dans votre navigateur.",
+    presetsLabel: "Choisir un scénario",
     presets: {
       prompt_extraction: {
         label: "Extraction du prompt système",
@@ -201,17 +202,24 @@ export const fr = {
         summary:
           "Un document piégé ordonne à l'agent d'appeler un outil d'envoi vers un serveur inconnu.",
       },
+      routine_ticket: {
+        label: "Demande courante",
+        summary: "Un employé demande d'ouvrir un billet de soutien. Le garde-fou doit le laisser passer.",
+      },
     },
     attackLabel: "Requête de l'attaquant",
+    routineLabel: "Requête d'un employé",
     hiddenLabel: "Texte caché dans le document",
     unprotectedTitle: "Modèle sans protection",
     simulationTag: "Simulation scénarisée",
     guardedTitle: "Exécution sous garde-fous",
     liveTag: "Moteur réel, dans votre navigateur",
     breach: "BRÈCHE DÉTECTÉE",
+    noBreach: "AUCUNE BRÈCHE",
     blocked: "BLOQUÉ + JOURNALISÉ",
     allowed: "AUTORISÉ",
     rule: "Règle",
+    noRuleTriggered: "Aucune règle déclenchée ({count} vérifiées)",
     owasp: "Référence OWASP",
     latency: "Latence moyenne (200 exécutions)",
     auditJson: "Journal d'audit (JSON)",
@@ -220,9 +228,10 @@ export const fr = {
   offers: {
     title: "Prouver, corriger, maintenir",
     intro:
-      "Trois mandats à prix fixe. Chacun a une portée écrite, un délai et un livrable. Le fondateur exécute chaque mandat lui-même.",
+      "Trois mandats à prix fixe, chacun avec une portée écrite, un délai et un livrable. Le fondateur les exécute lui-même\u00a0: architecture de sécurité d'entreprise chez un fournisseur multinational de services de sécurité gérés, tests adverses de systèmes d'IA et 30 ans d'exploitation de PME.",
     includesLabel: "Inclus",
-    pricesNote: "Prix en dollars canadiens, taxes en sus.",
+    pricesNote:
+      "Prix en dollars canadiens, taxes en sus. Mandats à prix fixe\u00a0: 50\u00a0% à la signature, le solde à la livraison. Le mandat de posture est facturé chaque mois.",
     disclaimer:
       "CyberSentinelPro fournit des services d'ingénierie en cybersécurité et en conformité opérationnelle, et non des avis juridiques.",
     tiers: [
@@ -231,16 +240,18 @@ export const fr = {
         code: "T1",
         name: "Audit hybride Loi 25 et gouvernance IA",
         price: "5\u00a0000\u00a0$ à 10\u00a0000\u00a0$",
-        cadence: "Prix fixe, résultats en 10 jours ouvrables",
+        cadence: "Prix fixe, constats 10\u00a0jours ouvrables après le lancement",
         includes: [
           "Revue de vos documents selon les obligations de la Loi 25",
-          "Tests adverses de vos surfaces d'IA, alignés sur le OWASP LLM Top 10 (2025)",
-          "Feuille de route des correctifs, classés par gravité",
-          "Breffage de 60 minutes avec la direction",
+          "Tests adverses de vos surfaces d'IA, alignés sur le OWASP LLM Top 10 (2025), sous autorisation signée",
+          "Constats appuyés par des preuves, classés par gravité, chacun avec un responsable et une échéance",
+          "Correctifs rapides à 30\u00a0jours, correctifs structurels à 90\u00a0jours",
+          "Breffage de 60\u00a0minutes et recommandation écrite pour chaque système d'IA\u00a0: aller de l'avant, avec conditions ou reporter",
         ],
         anchors:
-          "5\u00a0000\u00a0$ pour un outil d'IA et une documentation légère, 7\u00a0500\u00a0$ en standard, 10\u00a0000\u00a0$ pour plusieurs flux de travail.",
-        outOfScope: "Hors portée\u00a0: la correction, les tests d'intrusion réseau hors IA et les opinions juridiques.",
+          "5\u00a0000\u00a0$ pour un outil d'IA et une documentation légère, 7\u00a0500\u00a0$ en standard, 10\u00a0000\u00a0$ pour plusieurs flux de travail. Chaque système d'IA additionnel\u00a0: 2\u00a0000\u00a0$ à 3\u00a0000\u00a0$.",
+        outOfScope:
+          "Hors portée\u00a0: la correction, les tests d'intrusion réseau hors IA, les opinions juridiques et toute certification de conformité.",
         cta: "Commencer par le diagnostic",
         href: "#diagnostic",
       },
@@ -256,7 +267,8 @@ export const fr = {
           "Dossier ÉFVP pour le système d'IA",
           "Formation bilingue de 90 minutes et re-test d'acceptation",
         ],
-        anchors: "Suit un audit T1\u00a0: on part de ses constats et on les re-teste à la fin.",
+        anchors:
+          "Suit un audit T1\u00a0: on part de ses constats et on les re-teste à la fin. Deux séries de demandes de changement incluses.",
         outOfScope: "Hors portée\u00a0: la réécriture d'applications et le développement continu.",
         cta: "Voir un garde-fou en action",
         href: "#sandbox",
@@ -266,14 +278,16 @@ export const fr = {
         code: "T3",
         name: "Mandat de posture de sécurité IA et conformité",
         price: "2\u00a0000\u00a0$ à 5\u00a0000\u00a0$ par mois",
-        cadence: "Minimum de 6 mois, cycle mensuel",
+        cadence: "Minimum de 6\u00a0mois, intégration en 2\u00a0semaines",
         includes: [
           "Suivi mensuel de vos obligations Loi 25",
           "Bloc-conseil de 4 à 8 heures par mois",
           "Re-test adverse trimestriel de vos surfaces d'IA",
           "Rapport de posture bilingue pour la direction",
+          "Audit complet chaque année, à 20\u00a0% de rabais",
         ],
-        anchors: "Le prix dépend du nombre de systèmes et de la profondeur des tests.",
+        anchors:
+          "Prix selon le nombre de systèmes et la profondeur des tests. Incident\u00a0: réponse le jour ouvrable suivant. Conseil\u00a0: sous 48\u00a0heures.",
         outOfScope: "Ce n'est pas un centre de surveillance 24/7 ni un service d'assistance.",
         cta: "Commencer par le diagnostic",
         href: "#diagnostic",
@@ -283,7 +297,7 @@ export const fr = {
   moat: {
     title: "Comment nous nous comparons",
     intro:
-      "Une comparaison par catégorie de fournisseurs, selon leur positionnement public observé en novembre 2026.",
+      "Une comparaison par catégorie de fournisseurs, selon leur positionnement public observé en novembre 2026. Les prix des autres catégories sont des estimations.",
     criterionLabel: "Critère",
     columns: [
       "CyberSentinelPro",

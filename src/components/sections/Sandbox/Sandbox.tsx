@@ -3,8 +3,9 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries/fr";
+import { interpolate } from "@/i18n/interpolate";
 import { playGlassClick } from "@/lib/audio";
-import { evaluateAgentRequest, runGuardedRequest, type GuardResult } from "@/lib/sandbox-engine";
+import { evaluateAgentRequest, RULES_IN_ORDER, runGuardedRequest, type GuardResult } from "@/lib/sandbox-engine";
 import { trackEvent } from "@/lib/track-event";
 import { replayFirewall } from "@/scene/scene-bus";
 import { buildPreset, PRESET_IDS, type PresetFixture, type PresetId } from "./presets";
@@ -38,6 +39,7 @@ function auditLog(run: Run): string {
       event: "guard.decision",
       preset: run.preset,
       verdict: result.verdict,
+      rules_evaluated: RULES_IN_ORDER,
       rule_id: result.rule_id,
       owasp_ref: result.owasp_ref,
       reason: result.reason,
@@ -60,15 +62,17 @@ export function Sandbox({ locale, copy }: { locale: Locale; copy: Dictionary["sa
   }, [locale]);
 
   function launch(preset: PresetId) {
-    setRun(execute(preset, locale));
-    replayFirewall();
+    const next = execute(preset, locale);
+    setRun(next);
+    // The firewall scene shows a packet deflecting, which only matches an attack.
+    if (next.fixture.kind === "attack") replayFirewall();
     playGlassClick();
     trackEvent("sandbox_run", { preset });
   }
 
   return (
     <div className="space-y-6">
-      <div role="group" aria-label={copy.presetsLabel} className="grid gap-2.5 md:grid-cols-3">
+      <div role="group" aria-label={copy.presetsLabel} className="grid gap-2.5 md:grid-cols-2 xl:grid-cols-4">
         {PRESET_IDS.map((preset) => (
           <button
             key={preset}
@@ -76,7 +80,7 @@ export function Sandbox({ locale, copy }: { locale: Locale; copy: Dictionary["sa
             data-preset={preset}
             aria-pressed={run.preset === preset}
             onClick={() => launch(preset)}
-            className={`rounded-md border p-4 text-left transition-colors ${run.preset === preset ? "border-ice bg-fleur/20" : "border-line-strong hover:border-ice/60"}`}
+            className={`flex flex-col justify-start rounded-md border p-4 text-left transition-colors ${run.preset === preset ? "border-ice bg-fleur/20" : "border-line-strong hover:border-ice/60"}`}
           >
             <span className="block font-semibold">{copy.presets[preset].label}</span>
             <span className="mt-1 block text-sm text-mist">{copy.presets[preset].summary}</span>
@@ -93,14 +97,15 @@ export function Sandbox({ locale, copy }: { locale: Locale; copy: Dictionary["sa
 }
 
 function UnprotectedPane({ run, copy }: { run: Run; copy: Dictionary["sandbox"] }) {
+  const routine = run.fixture.kind === "routine";
   return (
     <article data-pane="unprotected" className="panel flex flex-col rounded-lg p-5">
       <header className="flex flex-wrap items-center justify-between gap-2">
         <h3 className="text-lg font-semibold">{copy.unprotectedTitle}</h3>
         <span className="hud-text rounded-sm border border-line-strong px-2 py-0.5 text-mist">{copy.simulationTag}</span>
       </header>
-      <p className="mt-4 text-xs text-mist">{copy.attackLabel}</p>
-      <p data-attack-text className="mt-1 whitespace-pre-wrap break-words font-mono text-sm">{run.fixture.attack}</p>
+      <p className="mt-4 text-xs text-mist">{routine ? copy.routineLabel : copy.attackLabel}</p>
+      <p data-attack-text className="mt-1 whitespace-pre-wrap break-words font-mono text-sm">{run.fixture.typed}</p>
       {run.fixture.hidden ? (
         <>
           <p className="mt-3 text-xs text-mist">{copy.hiddenLabel}</p>
@@ -110,8 +115,8 @@ function UnprotectedPane({ run, copy }: { run: Run; copy: Dictionary["sandbox"] 
       <pre data-unprotected-output className="mt-4 max-h-56 flex-1 overflow-auto whitespace-pre-wrap break-words rounded-md bg-night/80 p-3 font-mono text-xs text-frost/90">
         {run.fixture.unprotectedOutput}
       </pre>
-      <p data-verdict="breach" className="hud-text mt-4 font-semibold text-breach">
-        {copy.breach}
+      <p data-verdict={routine ? "no-breach" : "breach"} className={`hud-text mt-4 font-semibold ${routine ? "text-mist" : "text-breach"}`}>
+        {routine ? copy.noBreach : copy.breach}
       </p>
     </article>
   );
@@ -121,7 +126,7 @@ function GuardedPane({ run, copy }: { run: Run; copy: Dictionary["sandbox"] }) {
   const log = useMemo(() => auditLog(run), [run]);
   const { result } = run;
   const rows: ReadonlyArray<readonly [string, string]> = [
-    [copy.rule, result.rule_id ?? "—"],
+    [copy.rule, result.rule_id ?? interpolate(copy.noRuleTriggered, { count: RULES_IN_ORDER.length })],
     [copy.owasp, result.owasp_ref ?? "—"],
     [copy.latency, `${result.latency_ms.toFixed(4)} ms`],
   ];

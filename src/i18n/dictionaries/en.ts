@@ -5,7 +5,7 @@ export const en: Dictionary = {
   meta: {
     title: "CyberSentinelPro | Law 25 and AI security audits, Laval",
     description:
-      "Hybrid Law 25 audits and adversarial testing of your AI systems, at a fixed price, for Quebec companies with 25 to 250 employees. Free risk score.",
+      "Law 25 compliance and AI security: a fixed-price hybrid audit with adversarial testing of your AI systems, for Quebec companies with 25 to 250 employees.",
     privacyTitle: "Privacy policy | CyberSentinelPro",
     privacyDescription:
       "What personal information CyberSentinelPro collects, why, where it is hosted and how to exercise your rights.",
@@ -161,7 +161,7 @@ export const en: Dictionary = {
     workEmail: "Work email",
     company: "Company",
     consentContact: "I agree that CyberSentinelPro may contact me about my request.",
-    consentMarketing: "I also agree to receive the monthly newsletter (optional).",
+    consentMarketing: "I agree to receive CyberSentinelPro's monthly newsletter (optional). I can unsubscribe at any time.",
     purpose:
       "We use this information to answer your request and discuss it with you. It is kept for 24 months.",
     privacyLink: "Privacy policy",
@@ -180,8 +180,8 @@ export const en: Dictionary = {
   sandbox: {
     title: "Threat Sandbox",
     intro:
-      "Three known attacks against Clara, the fictional AI assistant of Groupe Exemple inc. On the left, the scripted answer of an unprotected model. On the right, our rule engine, running in your browser.",
-    presetsLabel: "Choose an attack",
+      "Three known attacks and one routine request, sent to Clara, the fictional AI assistant of Groupe Exemple inc. On the left, the scripted answer of an unprotected model. On the right, our rule engine, running in your browser.",
+    presetsLabel: "Choose a scenario",
     presets: {
       prompt_extraction: {
         label: "System prompt extraction",
@@ -195,17 +195,24 @@ export const en: Dictionary = {
         label: "MCP tool hijack",
         summary: "A booby-trapped document tells the agent to call a send tool pointing at an unknown server.",
       },
+      routine_ticket: {
+        label: "Routine request",
+        summary: "An employee asks the agent to open a support ticket. The guardrail must let it through.",
+      },
     },
     attackLabel: "Attacker request",
+    routineLabel: "Employee request",
     hiddenLabel: "Text hidden in the document",
     unprotectedTitle: "Unprotected model",
     simulationTag: "Scripted simulation",
     guardedTitle: "Guardrailed runtime",
     liveTag: "Real engine, in your browser",
     breach: "BREACH DETECTED",
+    noBreach: "NO BREACH",
     blocked: "BLOCKED + LOGGED",
     allowed: "ALLOWED",
     rule: "Rule",
+    noRuleTriggered: "No rule triggered ({count} checked)",
     owasp: "OWASP reference",
     latency: "Average latency (200 runs)",
     auditJson: "Audit log (JSON)",
@@ -214,9 +221,10 @@ export const en: Dictionary = {
   offers: {
     title: "Prove, close, keep",
     intro:
-      "Three fixed-price engagements. Each has a written scope, a timeline and a deliverable. The founder delivers every engagement personally.",
+      "Three fixed-price engagements, each with a written scope, a timeline and a deliverable. The founder delivers every one personally: enterprise security architecture at a multinational managed security provider, hands-on adversarial testing of AI systems, and 30 years of running small businesses.",
     includesLabel: "Included",
-    pricesNote: "Prices in Canadian dollars, plus taxes.",
+    pricesNote:
+      "Prices in Canadian dollars, plus taxes. Fixed-price engagements: 50% on signature, the balance on delivery. The retainer is billed monthly.",
     disclaimer:
       "CyberSentinelPro delivers technical cybersecurity and operational compliance engineering, not legal advice.",
     tiers: [
@@ -225,16 +233,17 @@ export const en: Dictionary = {
         code: "T1",
         name: "Hybrid Law 25 and AI governance audit",
         price: "$5,000 to $10,000 CAD",
-        cadence: "Fixed price, findings in 10 business days",
+        cadence: "Fixed price, findings 10\u00a0business days after kickoff",
         includes: [
           "Review of your documents against Law 25 obligations",
-          "Adversarial testing of your AI surfaces, mapped to the OWASP LLM Top 10 (2025)",
-          "Remediation roadmap, ranked by severity",
-          "60-minute briefing with leadership",
+          "Adversarial testing of your AI surfaces, mapped to the OWASP LLM Top 10 (2025), under signed authorization",
+          "Evidence-backed findings ranked by severity, each with an owner and a deadline",
+          "Quick wins at 30\u00a0days, structural fixes at 90\u00a0days",
+          "60-minute briefing and a written recommendation for each AI system: proceed, proceed with conditions, or defer",
         ],
         anchors:
-          "$5,000 for one AI tool with light documentation, $7,500 standard, $10,000 for several workflows.",
-        outOfScope: "Out of scope: remediation, network penetration testing beyond AI, and legal opinions.",
+          "$5,000 for one AI tool with light documentation, $7,500 standard, $10,000 for several workflows. Each additional AI system: $2,000 to $3,000.",
+        outOfScope: "Out of scope: remediation, network penetration testing beyond AI, legal opinions and any compliance certification.",
         cta: "Start with the diagnostic",
         href: "#diagnostic",
       },
@@ -250,7 +259,8 @@ export const en: Dictionary = {
           "Privacy impact assessment file for the AI system",
           "90-minute bilingual training and an acceptance re-test",
         ],
-        anchors: "Follows a T1 audit: it starts from those findings and re-tests them at the end.",
+        anchors:
+          "Follows a T1 audit: it starts from those findings and re-tests them at the end. Two rounds of change requests included.",
         outOfScope: "Out of scope: application rewrites and ongoing development.",
         cta: "Watch a guardrail work",
         href: "#sandbox",
@@ -260,14 +270,16 @@ export const en: Dictionary = {
         code: "T3",
         name: "AI security posture and compliance retainer",
         price: "$2,000 to $5,000 CAD per month",
-        cadence: "6-month minimum, monthly cycle",
+        cadence: "6-month minimum, 2-week onboarding",
         includes: [
           "Monthly tracking of your Law 25 obligations",
           "A 4 to 8 hour advisory block each month",
           "Quarterly adversarial re-test of your AI surfaces",
           "Bilingual posture report for leadership",
+          "A full audit every year, at 20% off",
         ],
-        anchors: "The price depends on the number of systems and the depth of testing.",
+        anchors:
+          "Priced by the number of systems and the depth of testing. Incidents: response the next business day. Advisory requests: within 48\u00a0hours.",
         outOfScope: "This is not a 24/7 SOC or a help desk.",
         cta: "Start with the diagnostic",
         href: "#diagnostic",
@@ -276,7 +288,8 @@ export const en: Dictionary = {
   },
   moat: {
     title: "How we compare",
-    intro: "A comparison by vendor category, based on public positioning observed in November 2026.",
+    intro:
+      "A comparison by vendor category, based on public positioning observed in November 2026. Prices for the other categories are estimates.",
     criterionLabel: "Criterion",
     columns: ["CyberSentinelPro", "Compliance checklist SaaS", "Generalist MSPs", "Big 4 firms"],
     rows: [
