@@ -1,0 +1,141 @@
+@import "tailwindcss";
+
+/*
+ * Palette: St. Lawrence night base, Quebec-flag blue for actions, frost text,
+ * amber for exposure warnings, red reserved for breaches.
+ */
+@theme inline {
+  --color-night: #07111f;
+  --color-abyss: #0c1a2e;
+  --color-deep: #10223b;
+  --color-frost: #e7eef8;
+  --color-mist: #9db0c8;
+  --color-fleur: #1f55e0;
+  --color-fleur-bright: #4a78f6;
+  --color-ice: #8ec5ff;
+  --color-amber: #f2b441;
+  --color-breach: #ff6a5f;
+  --color-line: rgb(170 200 235 / 0.16);
+  --color-line-strong: rgb(170 200 235 / 0.32);
+
+  --font-display: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, "SFMono-Regular", monospace;
+
+  --text-display: clamp(2.35rem, 1.3rem + 3.6vw, 4.5rem);
+  --text-display--line-height: 1.02;
+  --text-section: clamp(1.9rem, 1.3rem + 1.8vw, 3rem);
+  --text-section--line-height: 1.08;
+}
+
+@layer base {
+  html {
+    background-color: var(--color-night);
+    color: var(--color-frost);
+    color-scheme: dark;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    font-family: var(--font-sans);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    font-feature-settings: "cv11", "ss01";
+    min-height: 100dvh;
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    text-wrap: balance;
+    letter-spacing: -0.02em;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  section[id] {
+    scroll-margin-top: 5.5rem;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-ice);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+  ::selection {
+    background: rgb(31 85 224 / 0.6);
+    color: #fff;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 3rem;
+    padding: 0.75rem 1.4rem;
+    border-radius: 0.4rem;
+    background: var(--color-fleur);
+    color: #fff;
+    font-weight: 600;
+    transition: background-color 160ms ease;
+  }
+  .btn-primary:hover {
+    background: var(--color-fleur-bright);
+  }
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 3rem;
+    padding: 0.75rem 1.4rem;
+    border-radius: 0.4rem;
+    border: 1px solid var(--color-line-strong);
+    color: var(--color-frost);
+    font-weight: 600;
+    transition: border-color 160ms ease;
+  }
+  .btn-secondary:hover {
+    border-color: var(--color-ice);
+  }
+  .panel {
+    background: rgb(12 26 46 / 0.88);
+    border: 1px solid var(--color-line);
+  }
+  .field {
+    width: 100%;
+    min-height: 2.9rem;
+    padding: 0.6rem 0.8rem;
+    border-radius: 0.35rem;
+    border: 1px solid var(--color-line-strong);
+    background: rgb(7 17 31 / 0.9);
+    color: var(--color-frost);
+  }
+  .field[aria-invalid="true"] {
+    border-color: var(--color-breach);
+  }
+  .hud-text {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+  }
+}
+
+/* The hero shell facets fade once the WebGL scene reports its first frame. */
+[data-scene-ready="true"] [data-hero-facets] {
+  opacity: 0;
+}
+[data-hero-facets] {
+  transition: opacity 900ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
